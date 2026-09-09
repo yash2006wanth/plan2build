@@ -1,0 +1,14 @@
+Activity ID,Activity Name,WBS,Start Date,End Date,Planned Quantity,Unit,Location,Predecessor,Description
+WBS-01.01,Site Preparation & Utility Shifting,1.1,2026-08-01,2026-08-10,500,meters,Corridor P01-P08,,Demolition of old barriers and utility shifting
+WBS-01.02,Foundation Excavation - Pier P01 to P04,1.2,2026-08-05,2026-08-20,1200,m3,Zone A - Pier P01-P04,WBS-01.01,Earthwork excavation up to hard rock stratum
+WBS-01.03,Raft Foundation Concrete Pouring - Zone A,1.3,2026-08-15,2026-08-28,850,m3,Zone A - Foundation Raft,WBS-01.02,M35 grade mass concrete pour for raft foundation
+WBS-02.01,Column Rebar & Reinforcement,2.1,2026-08-22,2026-09-08,90,tons,Piers P01-P06,WBS-01.03,TMT steel rebar cage assembly and fixing
+WBS-02.02,Pier Column Concrete Construction,2.2,2026-08-28,2026-09-15,400,m3,Pier Columns P01-P04,WBS-02.01,Pouring M40 self-compacting concrete for 8m columns
+WBS-02.03,Pier Cap Formwork & Post-Tensioning,2.3,2026-09-05,2026-09-22,16,units,Pier Caps P01-P08,WBS-02.02,Steel shuttering formwork and pre-stressing duct alignment
+WBS-03.01,Pre-cast Girder Casting & Curing,3.1,2026-08-10,2026-09-25,32,girders,Casting Yard,,Casting pre-stressed PSC I-girders at casting yard
+WBS-03.02,Girder Erection & Span Launching,3.2,2026-09-15,2026-10-10,32,girders,Main Flyover Spans,WBS-02.03,Heavy crane lifting and positioning of girders on pier bearings
+WBS-04.01,Deck Slab Reinforcement & Shuttering,4.1,2026-09-25,2026-10-20,2400,m2,Flyover Deck Span 1-4,WBS-03.02,Deck mesh rebar installation and deck plate fixing
+WBS-04.02,Deck Concrete Pouring & Curing,4.2,2026-10-05,2026-10-30,1800,m3,Flyover Deck Span 1-4,WBS-04.01,Monolithic concrete pouring for flyover deck slab
+WBS-05.01,Crash Barrier Concrete Construction,5.1,2026-10-15,2026-11-10,1200,meters,Flyover Edge Parapets,WBS-04.02,Reinforced concrete parapet barrier wall along edges
+WBS-05.02,Asphalt Wearing Course & Paving,5.2,2026-11-01,2026-11-20,9600,m2,Flyover Carriageway,WBS-04.02,Hot mix bituminous concrete overlay
+WBS-06.01,Electrical Ducting & Smart Lighting,6.1,2026-10-25,2026-11-25,45,poles,Median & Margins,WBS-05.01,High-mast LED light poles and cable conduits

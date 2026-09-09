@@ -1,0 +1,18 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
+
+export default function ExecutionPage() {
+  const [events,setEvents]=useState<any[]>([]); const [analytics,setAnalytics]=useState<any>(null); const [text,setText]=useState(''); const [message,setMessage]=useState('');
+  const load=async()=>{ const [e,a]=await Promise.all([api.get('/execution/events?project_id=1'),api.get('/execution/analytics?project_id=1')]);setEvents(e.data);setAnalytics(a.data); };
+  useEffect(()=>{load().catch(()=>setMessage('Execution service is unavailable.'));},[]);
+  const ingest=async()=>{if(!text.trim())return;const r=await api.post('/execution/ingest/text',{project_id:1,text,source_user:'Planner'});setMessage(`Imported ${r.data.imported}; ${r.data.needs_review} need review.`);setText('');load();};
+  const decide=async(id:number,action:string)=>{await api.post(`/execution/events/${id}/decision`,{action,user_name:'Planner'});load();};
+  return <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div><p className="text-cyan-400 text-xs font-bold tracking-wider">PLAN → ACTUAL</p><h2 className="text-2xl font-bold text-slate-100">Execution Intelligence</h2><p className="text-sm text-slate-400">Ingest site execution, review matches, and retain confirmed history.</p></div>
+    <section className="glass-panel p-5 rounded-xl"><h3 className="font-semibold text-slate-100 mb-3">Paste daily report</h3><textarea value={text} onChange={e=>setText(e.target.value)} className="w-full min-h-24 bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm" placeholder="e.g. START piping spool erection at Area A, 20 m completed"/><button onClick={ingest} className="mt-3 px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-lg text-sm">Ingest report</button>{message&&<span className="ml-3 text-xs text-slate-400">{message}</span>}</section>
+    <section className="grid md:grid-cols-3 gap-4"><Card title="Actual vs planned" value={analytics?.actual_vs_planned?.length ?? 0} note="confirmed durations"/><Card title="Unmatched terminology" value={Object.keys(analytics?.unmatched_terminology||{}).length} note="kept for review"/><Card title="Discipline productivity" value={Object.keys(analytics?.discipline_productivity||{}).length} note="inferred / confirmed"/></section>
+    <section className="glass-panel rounded-xl overflow-hidden"><div className="p-4 border-b border-slate-800"><h3 className="font-semibold">Event review & unmatched queue</h3></div><div className="overflow-x-auto"><table className="w-full text-sm"><thead className="text-slate-500 text-left"><tr><th className="p-3">Event</th><th>Discipline</th><th>Confidence</th><th>Status</th><th>Action</th></tr></thead><tbody>{events.map(e=><tr key={e.id} className="border-t border-slate-800"><td className="p-3"><b>{e.event_type}</b><p className="text-slate-400 max-w-md truncate">{e.raw_input}</p></td><td>{e.discipline}</td><td>{Math.round(e.confidence*100)}%</td><td><span className="text-amber-300">{e.status}</span></td><td>{(e.status==='PENDING_REVIEW'||e.status==='UNMATCHED')&&<><button onClick={()=>decide(e.id,'approve')} className="text-cyan-400 mr-3">Approve</button><button onClick={()=>decide(e.id,'reject')} className="text-rose-400">Reject</button></>}</td></tr>)}</tbody></table></div></section>
+  </div>;
+}
+function Card({title,value,note}:{title:string,value:number,note:string}){return <div className="glass-panel rounded-xl p-4"><p className="text-slate-400 text-xs">{title}</p><p className="text-2xl font-bold text-slate-100">{value}</p><p className="text-[11px] text-slate-500">{note}</p></div>}

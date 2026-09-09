@@ -1,0 +1,197 @@
+================================================================================
+                       PLAN2BUILD - PROJECT OVERVIEW & SPECIFICATION
+================================================================================
+
+PROJECT NAME: Plan2Build (AI-Powered Infrastructure Project Controls Platform)
+PROBLEM STATEMENT: SIH26122 - Intelligent Data Capture & Schedule-Linking Layer
+                  for Infrastructure Project Management (Planning-to-Execution Bridge)
+TARGET DOMAIN: Infrastructure Construction, Smart City Projects, EPC Contracting
+
+================================================================================
+1. CORE VISION & PRODUCT OVERVIEW
+================================================================================
+"Don't just track construction progress. Connect reality to the plan, explain 
+what is happening, predict what happens next, and help people take action."
+
+Plan2Build is an integrated AI-driven project controls platform designed to bridge 
+the gap between master project schedules (Primavera MSP, Excel, CSV) and ground-truth 
+site execution. It uses voice input, computer vision evidence, multi-signal AI 
+activity matching, Earned Value Management (EVM), critical path schedule analysis, 
+and what-if scenario simulations to give project managers actionable intelligence.
+
+================================================================================
+2. SYSTEM ARCHITECTURE & DATA FLOW
+================================================================================
+[Schedule Upload (CSV/XLSX/MSP)] 
+            |
+            v
+[Schedule Parser & WBS Engine] ---> [(PostgreSQL / SQLite Database)]
+                                                   |
+[Worker Voice / Text Input]                        v
+            |                        [Multi-Signal AI Activity Matcher]
+            v                        (Semantic + Location + Date + WBS)
+[STT & Entity Extractor]                           |
+            |                                      v
+            v                        [Confidence Scoring & Audit Trail]
+[Voice Confirmation Dialog]                        |
+            |                                      v
+            +---------------------> [Actual Progress & EVM Engine]
+                                                   |
+         +------------------+----------------------+-------------------+
+         |                  |                      |                   |
+         v                  v                      v                   v
+   [EVM Metrics]   [Critical Path Engine]  [Resource Intelligence] [Scenario Simulator]
+    (PV, EV, AC)    (Float & Downstream)   (Labour/Equip/Mat)    (What-If Forecasts)
+         |                  |                      |                   |
+         +------------------+----------------------+-------------------+
+                                    |
+                                    v
+                       [Project Copilot AI Assistant]
+                                    |
+                                    v
+                     [Executive Command Center & Map]
+
+================================================================================
+3. KEY FEATURE MATRIX
+================================================================================
+
+1. COST INTELLIGENCE & EARNED VALUE MANAGEMENT (EVM)
+   - Tracks Budgeted Cost, Unit Rate, Planned Qty, Actual Qty, Planned/Actual Cost.
+   - BOQ Support: Item codes, units, budgeted cost vs actual spent, % complete.
+   - Core EVM Metrics Computed:
+     - PV (Planned Value): Budgeted cost of work scheduled.
+     - EV (Earned Value): Budgeted cost of work performed.
+     - AC (Actual Cost): Actual expenditure to date.
+     - CPI (Cost Performance Index): EV / AC (> 1.0 = under budget).
+     - SPI (Schedule Performance Index): EV / PV (> 1.0 = ahead of schedule).
+     - EAC (Estimate at Completion): BAC / CPI.
+     - VAC (Variance at Completion): BAC - EAC.
+
+2. WHAT-IF SCENARIO SIMULATOR ENGINE (/scenarios)
+   - Interactively test project adjustments:
+     * Manpower (+/- N workers)
+     * Overtime & Shift Hours (+/- N hrs/day)
+     * Material Delivery Delays (N days)
+     * Productivity Multipliers (0.8x to 1.5x)
+   - Outputs BASELINE vs SCENARIO comparison (completion date pull-in, net days 
+     saved, INR cost impact, affected critical path activities).
+
+3. CRITICAL PATH INTELLIGENCE & DOWNSTREAM IMPACT ENGINE (/critical-path)
+   - Forward Pass (ES, EF) and Backward Pass (LS, LF).
+   - Total Float (Slack) = LS - ES.
+   - Zero-Float Critical Path Chain Identification.
+   - Downstream Impact Calculator: Simulates cascading delays across successor 
+     activities when a specific task is delayed.
+
+4. AI PROJECT MANAGER / COPILOT (/copilot)
+   - Ground-truth data conversational assistant with zero hallucinations.
+   - Returns structured responses: ANSWER + EVIDENCE + METRICS + RECOMMENDED ACTION.
+
+5. MULTILINGUAL VOICE ASSISTANT (/worker-mode & /copilot)
+   - Supports English, Telugu (తెలుగు), and Hindi (हिन्दी).
+   - Worker Mode: Voice input -> Entity extraction (Qty, Unit, Activity) -> 
+     Confirmation Modal -> Database mutation.
+   - PM Mode: Voice queries -> Database graph query -> Voice/TTS synthesized answer.
+
+6. RESOURCE INTELLIGENCE (/resources)
+   - Labour Productivity: Actual vs planned units per man-hour by trade.
+   - Equipment Fleet Utilization: Operating, idle, and maintenance hours with % efficiency.
+   - Material Consumption Risk: Planned vs consumed quantities with waste/overconsumption detection.
+
+7. OFFLINE-FIRST SITE REPORTING
+   - LocalStorage queue for field updates when connection drops.
+   - Real-time "Pending Sync" counter badge with manual/auto sync trigger upon reconnect.
+
+8. COMPUTER VISION EVIDENCE TIMELINE (/evidence)
+   - Visual progress gallery (Before, During, Latest) with comparison slider.
+   - OpenCV / Object detection tags, confidence scores, human verification toggles.
+
+9. AUTOMATED DAILY PROGRESS REPORT GENERATOR (/dpr)
+   - One-click PDF / Printable summary aggregating daily site updates, EVM metrics, 
+     manpower, equipment, delays, and AI recommended actions.
+
+10. AUDITABILITY & TRACEABILITY CENTER (/audit)
+    - Immutable event logging for AI matches, manual overrides, progress edits, and voice actions.
+
+================================================================================
+4. TECHNICAL STACK & PROJECT STRUCTURE
+================================================================================
+
+FRONTEND (Next.js 14 / TypeScript / Tailwind CSS)
+- Framework: Next.js 14 (App Router)
+- UI & Styling: Tailwind CSS, Lucide React Icons
+- Charts & Visualization: Recharts (S-Curves, EVM gauge charts, productivity graphs)
+- Maps: Leaflet & React-Leaflet (Interactive site map with status pins)
+- API Client: Axios
+
+BACKEND (Python 3.11+ / FastAPI / SQLAlchemy)
+- API Framework: FastAPI
+- Database ORM: SQLAlchemy (PostgreSQL / SQLite fallback)
+- AI Matching Engine: SentenceTransformers (all-MiniLM-L6-v2) + TF-IDF Cosine Similarity
+  * Matching Formula: 0.35 * Semantic + 0.25 * Location + 0.20 * Date + 0.10 * Keyword + 0.10 * WBS
+- Image Processing: OpenCV / CV PyTorch abstractions
+- Data Validation: Pydantic v2
+
+DIRECTORY LAYOUT:
+d:\Plan2Build\
+├── README.md                 # Primary documentation
+├── implementation_plan.md    # Architecture and technical design specification
+├── PROJECT_DESCRIPTION.txt   # Complete plain text project summary (this file)
+├── docker-compose.yml        # Docker composition for Fullstack + DB
+├── .env.example              # Environment variables template
+├── data/                     # Sample CSV/XLSX schedules & demo dataset
+└── frontend/                 # Next.js 14 Application
+    └── src/
+        ├── app/              # App router pages
+        │   ├── page.tsx            # Executive Dashboard & Command Center
+        │   ├── worker-mode/        # Multilingual Voice Data Entry
+        │   ├── copilot/            # AI Project Controls Assistant
+        │   ├── scenarios/          # What-If Scenario Simulator
+        │   ├── critical-path/      # Critical Path Analysis
+        │   ├── cost/               # Cost & EVM Intelligence
+        │   ├── resources/          # Resource Management
+        │   ├── schedule/           # Schedule Upload & WBS Manager
+        │   ├── site-reports/       # Site Reports Feed
+        │   ├── evidence/           # Photo Timeline & CV Verification
+        │   ├── dpr/                # Daily Progress Report Generator
+        │   ├── audit/              # Audit Trail
+        │   ├── alerts/             # Project Alerts & Risk Flags
+        │   └── map/                # Interactive Project GIS Map
+        ├── components/       # UI components (Header, Sidebar, Demo Trigger, etc.)
+        └── lib/              # API Client (api.ts) & helper utilities
+
+================================================================================
+5. SETUP AND EXECUTION COMMANDS
+================================================================================
+
+OPTION A: DOCKER COMPOSE (RECOMMENDED)
+1. Run containers:
+   $ docker compose up --build
+
+2. Access interfaces:
+   - Frontend: http://localhost:3000
+   - Backend API Docs: http://localhost:8000/docs
+
+OPTION B: LOCAL DEVELOPMENT SETUP
+1. Backend Setup:
+   $ cd backend
+   $ python -m venv venv
+   $ venv\Scripts\activate      # On Windows
+   $ pip install -r requirements.txt
+   $ python run_tests.py        # Runs 10/10 test suites
+   $ uvicorn app.main:app --reload --port 8000
+
+2. Frontend Setup:
+   $ cd frontend
+   $ npm install
+   $ npm run dev                # Starts dev server on http://localhost:3000
+
+================================================================================
+6. SUMMARY FOR HACKATHON PRESENTATION (SIH26122)
+================================================================================
+Plan2Build transforms static Gantt charts into a dynamic, living control engine.
+By enabling zero-friction voice reporting on-site in regional languages, automatically 
+linking updates to WBS items using multi-signal AI, and calculating Earned Value & 
+Critical Path impacts in real-time, the platform eliminates field-to-office communication 
+delays and prevents costly construction overruns.
+================================================================================

@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sih26122_postgres
+    environment:
+      POSTGRES_DB: sih26122_db
+      POSTGRES_USER: sih_user
+      POSTGRES_PASSWORD: sih_password_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sih_user -d sih26122_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    container_name: sih26122_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://sih_user:sih_password_secret@postgres:5432/sih26122_db
+      - UPLOAD_DIR=/app/uploads
+      - EMBEDDING_MODEL=all-MiniLM-L6-v2
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: sih26122_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=http://backend:8000/api
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

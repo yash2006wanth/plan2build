@@ -1,0 +1,17 @@
+PLAN2BUILD - AI-Powered Infrastructure Project Controls Platform
+
+Full project specification and architecture details have been documented in:
+d:\Plan2Build\PROJECT_DESCRIPTION.txt
+
+Key Features Overview:
+----------------------
+1. Cost Intelligence & EVM (PV, EV, AC, CPI, SPI, EAC, VAC)
+2. What-If Scenario Simulator Engine (/scenarios)
+3. Critical Path & Downstream Delay Impact Engine (/critical-path)
+4. Zero-Hallucination AI Project Copilot (/copilot)
+5. Multilingual Voice Data Entry in EN/TE/HI (/worker-mode)
+6. Resource Productivity Tracking for Labour, Equipment & Materials (/resources)
+7. Offline-First Site Reporting Queue
+8. Computer Vision Photo Timeline Evidence (/evidence)
+9. Automated Daily Progress Report Generator (/dpr)
+10. Auditability & Traceability Log (/audit)
